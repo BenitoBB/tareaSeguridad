@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>DEMO: Canje de premio (Educativa)</title>
+    <style>
+        /* Fuentes y reset ligero */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --accent: #c62828;
+            --muted: #6b7280;
+            --success: #2e7d32;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(180deg, #eef2ff 0%, #f5f7fb 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            color: #111827;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 36px auto;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 28px;
+            padding: 24px;
+        }
+
+        /* Left panel (info) */
+        .panel {
+            background: var(--card);
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(18, 30, 60, 0.06);
+            min-height: 420px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0 0 8px;
+            font-size: 26px;
+            color: var(--accent)
+        }
+
+        p.lead {
+            margin: 0 0 12px;
+            color: var(--muted);
+            font-size: 15px
+        }
+
+        .bullets {
+            margin-top: 12px;
+        }
+
+        .bullets li {
+            margin: 10px 0;
+            color: #374151;
+            font-size: 14px
+        }
+
+        /* Right panel (form) */
+        .card {
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 10px 40px rgba(18, 30, 60, 0.08);
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff8a65, #ff7043);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-family: 'Montserrat';
+            box-shadow: 0 6px 20px rgba(255, 112, 67, 0.18);
+        }
+
+        .brand h2 {
+            margin: 0;
+            font-size: 16px
+        }
+
+        .brand p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        form .row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #e6e9ee;
+            background: #fff;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            transition: box-shadow .15s, border-color .15s;
+        }
+
+        input:focus,
+        textarea:focus {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.08);
+            border-color: #6366f1
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: var(--accent);
+            color: #fff;
+            border: 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 10px 30px rgba(198, 40, 40, 0.18);
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 10px
+        }
+
+        footer.note {
+            margin-top: 18px;
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        /* Modal (demo warning) */
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(2, 6, 23, 0.55);
+            z-index: 60;
+        }
+
+        .modal .box {
+            width: min(760px, 92%);
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(2, 6, 23, 0.5);
+            overflow: hidden;
+        }
+
+        .modal .box h3 {
+            margin: 0 0 8px;
+            color: var(--accent)
+        }
+
+        .modal .alert {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: #fff3f3;
+            border-left: 6px solid #f44336;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .modal .alert p {
+            margin: 0;
+            color: #7b1f1f
+        }
+
+        .modal .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 12px
+        }
+
+        .btn-muted {
+            background: #eef2ff;
+            color: #1e3a8a;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 0
+        }
+
+        .recommend {
+            background: #f7f9ff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e6eefc;
+            color: #153e75
+        }
+
+        /* responsive */
+        @media (max-width:900px) {
+            .wrap {
+                grid-template-columns: 1fr;
+                padding: 16px
+            }
+
+            .panel {
+                order: 2
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="panel">
+            <h1>¡Premio disponible! (DEMO EDUCATIVA)</h1>
+            <p class="lead">Esta es una demostración controlada para mostrar cómo un mensaje puede intentar que ingreses
+                información sensible. <strong>NO se almacenan ni se envían datos.</strong></p>
+
+            <h3>¿Qué verás aquí?</h3>
+            <ul class="bullets">
+                <li>Un mensaje que invita a canjear un premio.</li>
+                <li>Una página que pide datos típicos (nombre, dirección, edad).</li>
+                <li>Al pulsar <em>Canjear premio</em> aparecerá una alerta educativa.</li>
+            </ul>
+
+            <h3 style="margin-top:18px">Consejos rápidos</h3>
+            <ul class="bullets">
+                <li>Verifica siempre el remitente y la URL completa.</li>
+                <li>No introduzcas contraseñas o datos sensibles tras enlaces no verificados.</li>
+                <li>Activa 2FA en tus cuentas.</li>
+            </ul>
+
+            <div style="margin-top:18px" class="recommend">
+                <strong>Nota ética:</strong> Esta demo no roba datos. Si haces pruebas con personas, pide su
+                consentimiento por escrito.
+            </div>
+        </div>
+
+        <div class="card" aria-live="polite">
+            <div class="brand">
+                <div class="logo">PR</div>
+                <div>
+                    <h2>Promos Rápidas</h2>
+                    <p>Reclama tu cupón antes de que se agote (DEMO)</p>
+                </div>
+            </div>
+
+            <form id="demoForm" onsubmit="return false;">
+                <div class="row">
+                    <div style="flex:1">
+                        <label for="nombre">Nombre</label>
+                        <input id="nombre" name="nombre" placeholder="Ej. Ana" autocomplete="off">
+                    </div>
+                    <div style="flex:1">
+                        <label for="apellidos">Apellidos</label>
+                        <input id="apellidos" name="apellidos" placeholder="Ej. Pérez" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="flex:1">
+                        <label for="edad">Edad</label>
+                        <input id="edad" name="edad" type="number" min="1" max="120" placeholder="Ej. 28"
+                            autocomplete="off">
+                    </div>
+                    <div style="flex:1">
+                        <label for="telefono">Teléfono</label>
+                        <input id="telefono" name="telefono" placeholder="+52 123 456 7890" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="flex:1">
+                        <label for="email">Correo electrónico</label>
+                        <input id="email" name="email" type="email" placeholder="tucorreo@ejemplo.com"
+                            autocomplete="off">
+                    </div>
+                    <div style="flex:1">
+                        <label for="direccion">Dirección</label>
+                        <input id="direccion" name="direccion" placeholder="Calle, Colonia, Ciudad" autocomplete="off">
+                    </div>
+                </div>
+
+                <div style="margin-top:8px">
+                    <label for="coment">Comentario opcional</label>
+                    <textarea id="coment" name="coment" placeholder="¿Cómo supiste de la promo? (opcional)"></textarea>
+                </div>
+
+                <div style="margin-top:14px;display:flex;align-items:center;gap:12px">
+                    <button class="btn" id="btnCanjear" onclick="onCanjear()">Canjear premio</button>
+                    <div class="small">Al pulsar, verás una demostración educativa — no se envían datos.</div>
+                </div>
+
+                <footer class="note">¿Por qué pedimos tantos datos? En un ataque real el atacante pide información para
+                    el fraude o la suplantación de identidad.</footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal educativo -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="box" role="document">
+            <div class="alert" role="alert">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path d="M12 2L2 22h20L12 2z" fill="#fff3f3" />
+                    <path d="M12 6v6" stroke="#f44336" stroke-width="1.6" stroke-linecap="round" />
+                    <path d="M12 16h.01" stroke="#f44336" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+                <div>
+                    <h3>DEMO EDUCATIVA — ¡ATENCIÓN!</h3>
+                    <p style="margin-top:6px;color:#7b1f1f;">
+                        En esta demostración no se han almacenado ni enviado datos. <strong>En un ataque real</strong>,
+                        la información que acabas de introducir podría haberse capturado y usado para fraude o
+                        suplantación de identidad.
+                    </p>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:18px">
+                <div style="flex:1">
+                    <h4>¿Qué habría ocurrido?</h4>
+                    <ul style="color:#374151">
+                        <li>El atacante podría haber intentado iniciar sesión con tus datos.</li>
+                        <li>Podría vender o usar tu información para estafas.</li>
+                        <li>Solicitar transferencias, compras o 2FA mediante ingeniería social.</li>
+                    </ul>
+                </div>
+                <div style="flex:1">
+                    <h4>¿Cómo protegerte ahora?</h4>
+                    <ul style="color:#374151">
+                        <li>Activa 2FA y cambia contraseñas si usaste datos reales.</li>
+                        <li>Verifica siempre la URL y el remitente antes de hacer clic.</li>
+                        <li>No ingreses datos sensibles tras enlaces en mensajes no verificados.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-muted" onclick="closeModal()">Cerrar demo</button>
+                <button class="btn" onclick="showMore()">Ver recomendación</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Advertencia: este script *no* envía ni guarda datos. Solo simula la experiencia.
+        function onCanjear() {
+            // leer campos (solo para demo, no se almacenan)
+            const data = {
+                nombre: document.getElementById('nombre').value || '[vacío]',
+                apellidos: document.getElementById('apellidos').value || '[vacío]',
+                email: document.getElementById('email').value || '[vacío]'
+            };
+            // mostrar modal educativo
+            const m = document.getElementById('modal');
+            m.style.display = 'flex';
+            m.setAttribute('aria-hidden', 'false');
+
+            // opcional: console.log (solo en cliente)
+            console.log('DEMO - valores introducidos (no enviados):', data);
+            // evitar comportamiento por defecto
+            return false;
+        }
+
+        function closeModal() {
+            const m = document.getElementById('modal');
+            m.style.display = 'none';
+            m.setAttribute('aria-hidden', 'true');
+        }
+
+        function showMore() {
+            alert('Recomendación: Si alguna vez ingresaste datos reales por error, cambia contraseñas y activa 2FA inmediatamente.');
+        }
+
+        // accesibilidad: cerrar modal con ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+
+</html>
